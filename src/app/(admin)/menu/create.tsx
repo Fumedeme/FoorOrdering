@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TextInput, Image } from "react-native";
+import { View, Text, StyleSheet, TextInput, Image, Alert } from "react-native";
 import React, { useState } from "react";
 import Button from "@/components/Button";
 import { defaultPizzaImage } from "@/components/ProductListItem";
@@ -36,6 +36,14 @@ const create = () => {
     }
     return true;
   };
+
+  const onSubmit = () => {
+    if (isUpdating) {
+      onUpdate();
+    } else {
+      onCreate();
+    }
+  };
   const onCreate = () => {
     console.warn("Creating product");
 
@@ -44,6 +52,33 @@ const create = () => {
     }
 
     resetFields();
+  };
+
+  const onUpdate = () => {
+    console.warn("Updating product");
+
+    if (!validateInput()) {
+      return;
+    }
+
+    resetFields();
+  };
+
+  const confirmDelete = () => {
+    Alert.alert("Confirm", "Are you sure you want to delete this product?", [
+      {
+        text: "Cancel",
+      },
+      {
+        text: "Delete",
+        style: "destructive",
+        onPress: onDelete,
+      },
+    ]);
+  };
+
+  const onDelete = () => {
+    console.warn("DELETE");
   };
 
   const pickImage = async () => {
@@ -90,7 +125,12 @@ const create = () => {
       />
 
       <Text style={{ color: "red" }}>{errors}</Text>
-      <Button text="Create" onPress={onCreate} />
+      <Button text={isUpdating ? "update" : "Create"} onPress={onSubmit} />
+      {isUpdating && (
+        <Text onPress={confirmDelete} style={styles.textButton}>
+          Delete
+        </Text>
+      )}
     </View>
   );
 };
