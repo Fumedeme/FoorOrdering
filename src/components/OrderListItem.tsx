@@ -1,7 +1,8 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Pressable } from "react-native";
 import React from "react";
 import { Order } from "@/types";
 import Colors from "@/constants/Colors";
+import { Link } from "expo-router";
 
 type OrderListItemProps = {
   orderItem: Order;
@@ -20,15 +21,17 @@ const OrderListItem = ({ orderItem }: OrderListItemProps) => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.titleContainer}>
-        <Text style={[styles.title, { fontWeight: "bold" }]}>
-          Order #{orderItem.id}
-        </Text>
-        <Text style={styles.time}>{calculateTimePassed()}</Text>
-      </View>
-      <Text style={styles.title}>{orderItem.status}</Text>
-    </View>
+    <Link href={`/(user)/orders/${orderItem.id}`} asChild>
+      <Pressable style={styles.container}>
+        <View style={styles.titleContainer}>
+          <Text style={[styles.title, { fontWeight: "bold" }]}>
+            Order #{orderItem.id}
+          </Text>
+          <Text style={styles.time}>{calculateTimePassed()}</Text>
+        </View>
+        <Text style={styles.title}>{orderItem.status}</Text>
+      </Pressable>
+    </Link>
   );
 };
 const styles = StyleSheet.create({
