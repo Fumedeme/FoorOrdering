@@ -35,7 +35,7 @@ const signIn = () => {
       return;
     }
     console.warn("Signing in");
-    router.push("/(user)");
+    router.push("/(admin)");
 
     resetFields();
   };

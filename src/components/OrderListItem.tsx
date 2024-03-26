@@ -1,13 +1,14 @@
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import React from "react";
 import { Order } from "@/types";
-import { Link } from "expo-router";
+import { Href, Link, useSegments } from "expo-router";
 
 type OrderListItemProps = {
   orderItem: Order;
 };
 
 const OrderListItem = ({ orderItem }: OrderListItemProps) => {
+  const segments = useSegments();
   const calculateTimePassed = () => {
     const pastDate = new Date(orderItem.created_at);
     const currentDate = new Date();
@@ -20,7 +21,12 @@ const OrderListItem = ({ orderItem }: OrderListItemProps) => {
   };
 
   return (
-    <Link href={`/(user)/orders/${orderItem.id}`} asChild>
+    <Link
+      href={
+        `/${segments[0]}/orders/${orderItem.id}` as Href<`/${string}/orders/${number}`>
+      }
+      asChild
+    >
       <Pressable style={styles.container}>
         <View style={styles.titleContainer}>
           <Text style={[styles.title, { fontWeight: "bold" }]}>
