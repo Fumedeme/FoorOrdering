@@ -7,12 +7,37 @@ import { useRouter } from "expo-router";
 const signIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errors, setErrors] = useState("");
 
   const router = useRouter();
 
+  const validateInput = () => {
+    if (!email) {
+      setErrors("Email is mandatory");
+      return false;
+    }
+    if (!password) {
+      setErrors("Password is mandatory");
+      return false;
+    }
+
+    return true;
+  };
+
+  const resetFields = () => {
+    setEmail("");
+    setPassword("");
+    setErrors("");
+  };
+
   const onSubmit = () => {
+    if (validateInput()) {
+      return;
+    }
     console.warn("Signing in");
     router.push("/(user)");
+
+    resetFields();
   };
 
   return (
@@ -33,12 +58,10 @@ const signIn = () => {
       />
 
       <Button text="Sign In" onPress={onSubmit} />
-      <Text
-        onPress={() => router.push("/(auth)/signUp")}
-        style={styles.textButton}
-      >
+      <Text onPress={() => router.push("/signUp")} style={styles.textButton}>
         Create an account
       </Text>
+      <Text style={{ color: "red" }}>{errors}</Text>
     </View>
   );
 };

@@ -57,10 +57,7 @@ const signUp = () => {
       />
 
       <Button text="Create account" onPress={onSubmit} />
-      <Text
-        onPress={() => router.push("/(auth)/signIn")}
-        style={styles.textButton}
-      >
+      <Text onPress={() => router.back()} style={styles.textButton}>
         Sign In
       </Text>
 

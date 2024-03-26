@@ -1,7 +1,6 @@
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import React from "react";
 import { Order } from "@/types";
-import Colors from "@/constants/Colors";
 import { Link } from "expo-router";
 
 type OrderListItemProps = {
