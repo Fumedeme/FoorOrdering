@@ -12,6 +12,7 @@ const signIn = () => {
 
   const onSubmit = () => {
     console.warn("Signing in");
+    router.push("/(user)");
   };
 
   return (
