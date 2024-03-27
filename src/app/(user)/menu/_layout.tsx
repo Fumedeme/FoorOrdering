@@ -1,5 +1,6 @@
 import Colors from "@/constants/Colors";
-import { FontAwesome } from "@expo/vector-icons";
+import { supabase } from "@/lib/supabase";
+import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import { Link, Stack } from "expo-router";
 import { Pressable } from "react-native";
 
@@ -20,6 +21,16 @@ export default function MenuStack() {
               )}
             </Pressable>
           </Link>
+        ),
+        headerLeft: () => (
+          <Pressable onPress={() => supabase.auth.signOut()}>
+            <Ionicons
+              name="exit"
+              size={25}
+              color={Colors.light.tint}
+              style={{ marginRight: 15 }}
+            />
+          </Pressable>
         ),
       }}
     >
