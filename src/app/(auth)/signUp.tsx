@@ -1,13 +1,15 @@
-import { View, Text, StyleSheet, TextInput } from "react-native";
+import { View, Text, StyleSheet, TextInput, Alert } from "react-native";
 import React, { useState } from "react";
 import Colors from "@/constants/Colors";
 import Button from "@/components/Button";
 import { useRouter } from "expo-router";
+import { supabase } from "@/lib/supabase";
 
 const signUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const router = useRouter();
 
@@ -30,11 +32,21 @@ const signUp = () => {
     setErrors("");
   };
 
+  const signUpWithEmail = async () => {
+    setLoading(true);
+
+    const { error } = await supabase.auth.signUp({ email, password });
+
+    if (error) setErrors(error.message);
+
+    setLoading(false);
+  };
+
   const onSubmit = () => {
-    if (validateInput()) {
+    if (!validateInput()) {
       return;
     }
-    console.warn("Creating an account");
+    signUpWithEmail();
 
     resetFields();
   };
@@ -56,7 +68,11 @@ const signUp = () => {
         onChangeText={setPassword}
       />
 
-      <Button text="Create account" onPress={onSubmit} />
+      <Button
+        disabled={loading}
+        text={loading ? "Creating account..." : "Create account"}
+        onPress={onSubmit}
+      />
       <Text onPress={() => router.back()} style={styles.textButton}>
         Sign In
       </Text>

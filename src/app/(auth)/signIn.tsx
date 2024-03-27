@@ -3,11 +3,13 @@ import React, { useState } from "react";
 import Colors from "@/constants/Colors";
 import Button from "@/components/Button";
 import { useRouter } from "expo-router";
+import { supabase } from "@/lib/supabase";
 
 const signIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const router = useRouter();
 
@@ -30,12 +32,25 @@ const signIn = () => {
     setErrors("");
   };
 
+  const signInWithEmail = async () => {
+    setLoading(true);
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) setErrors(error.message);
+
+    setLoading(false);
+  };
+
   const onSubmit = () => {
-    if (validateInput()) {
+    if (!validateInput()) {
       return;
     }
-    console.warn("Signing in");
-    router.push("/(admin)");
+    signInWithEmail();
+    //router.push("/(admin)");
 
     resetFields();
   };
@@ -57,7 +72,11 @@ const signIn = () => {
         onChangeText={setPassword}
       />
 
-      <Button text="Sign In" onPress={onSubmit} />
+      <Button
+        disabled={loading}
+        text={loading ? "Signing in..." : "Sign In"}
+        onPress={onSubmit}
+      />
       <Text onPress={() => router.push("/signUp")} style={styles.textButton}>
         Create an account
       </Text>
