@@ -1,9 +1,18 @@
-import { FlatList, StyleSheet } from "react-native";
-import { View } from "@/components/Themed";
-import orders from "@assets/data/orders";
+import { ActivityIndicator, FlatList, StyleSheet, Text } from "react-native";
 import OrderListItem from "@/components/OrderListItem";
+import { useAdminOrderList } from "@/api/orders";
 
 export default function TabTwoScreen() {
+  const { data: orders, error, isLoading } = useAdminOrderList();
+
+  if (isLoading) {
+    return <ActivityIndicator />;
+  }
+
+  if (error) {
+    return <Text>Error while fethcing the orders</Text>;
+  }
+
   return (
     <FlatList
       data={orders}
