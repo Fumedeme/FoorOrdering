@@ -16,7 +16,7 @@ const create = () => {
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [errors, setErrors] = useState("");
-  const [image, setImage] = useState<string>();
+  const [image, setImage] = useState<string | null>();
 
   const router = useRouter();
 

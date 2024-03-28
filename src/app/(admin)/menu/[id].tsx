@@ -12,6 +12,7 @@ import { PizzaSize } from "@/types";
 import { FontAwesome } from "@expo/vector-icons";
 import Colors from "@/constants/Colors";
 import { useProduct } from "@/api/products";
+import { defaultPizzaImage } from "@/components/ProductListItem";
 
 const sizes: PizzaSize[] = ["S", "M", "L", "XL"];
 
@@ -61,7 +62,10 @@ const product = () => {
       />
       <Stack.Screen options={{ title: product.name }} />
 
-      <Image source={{ uri: product.image }} style={styles.image} />
+      <Image
+        source={{ uri: product.image || defaultPizzaImage }}
+        style={styles.image}
+      />
 
       <Text style={styles.title}>${product.name}</Text>
       <Text style={styles.price}>${product.price}</Text>

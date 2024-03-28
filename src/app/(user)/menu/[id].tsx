@@ -12,6 +12,7 @@ import Button from "@/components/Button";
 import { CartType, useCart } from "@/provider/CartProvider";
 import { PizzaSize } from "@/types";
 import { useProduct } from "@/api/products";
+import { defaultPizzaImage } from "@/components/ProductListItem";
 
 const sizes: PizzaSize[] = ["S", "M", "L", "XL"];
 
@@ -46,7 +47,10 @@ const product = () => {
     <View style={styles.container}>
       <Stack.Screen options={{ title: product.name }} />
 
-      <Image source={{ uri: product.image }} style={styles.image} />
+      <Image
+        source={{ uri: product.image || defaultPizzaImage }}
+        style={styles.image}
+      />
 
       <Text> Select size</Text>
       <View style={styles.sizes}>
