@@ -1,30 +1,36 @@
-import { View, Text, StyleSheet, Image, Pressable } from "react-native";
-import React, { useState } from "react";
 import {
-  Href,
-  Link,
-  Stack,
-  useLocalSearchParams,
-  useRouter,
-} from "expo-router";
-import products from "@assets/data/products";
-import Button from "@/components/Button";
-import { CartType, useCart } from "@/provider/CartProvider";
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  Pressable,
+  ActivityIndicator,
+} from "react-native";
+import React from "react";
+import { Href, Link, Stack, useLocalSearchParams } from "expo-router";
 import { PizzaSize } from "@/types";
 import { FontAwesome } from "@expo/vector-icons";
 import Colors from "@/constants/Colors";
+import { useProduct } from "@/api/products";
 
 const sizes: PizzaSize[] = ["S", "M", "L", "XL"];
 
 const product = () => {
-  const { id } = useLocalSearchParams();
-  const product = products.find((p) => p.id.toString() === id);
-  const [selectedSize, setSelectedSize] = useState<PizzaSize>("M");
-  const { addItem }: CartType = useCart();
-  const router = useRouter();
+  const { id: idString } = useLocalSearchParams();
+  const id = parseFloat(typeof idString === "string" ? idString : idString[0]);
+
+  const { data: product, error, isLoading } = useProduct(id);
 
   if (!product) {
     return <Text>Product is not found</Text>;
+  }
+
+  if (isLoading) {
+    return <ActivityIndicator />;
+  }
+
+  if (error) {
+    return <Text>There was an error fethicng the datas</Text>;
   }
 
   return (

@@ -5,6 +5,7 @@ import { Link, Stack } from "expo-router";
 import { Pressable } from "react-native";
 
 export default function MenuStack() {
+  //4.10.27
   return (
     <Stack
       screenOptions={{

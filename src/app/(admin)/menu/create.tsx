@@ -4,7 +4,8 @@ import Button from "@/components/Button";
 import { defaultPizzaImage } from "@/components/ProductListItem";
 import Colors from "@/constants/Colors";
 import * as ImagePicker from "expo-image-picker";
-import { Stack, useLocalSearchParams } from "expo-router";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import { useInsertProduct, useUpdateProduct } from "@/api/products";
 
 const create = () => {
   const [name, setName] = useState("");
@@ -12,8 +13,15 @@ const create = () => {
   const [errors, setErrors] = useState("");
   const [image, setImage] = useState<string>();
 
-  const { id } = useLocalSearchParams();
-  const isUpdating = !!id;
+  const router = useRouter();
+
+  const { id: idString } = useLocalSearchParams();
+  console.log("gelen id", idString);
+  const id = parseFloat(typeof idString === "string" ? idString : idString[0]);
+  const isUpdating = !!idString;
+
+  const { mutate: insertProduct } = useInsertProduct();
+  const { mutate: updateProduct } = useUpdateProduct();
 
   const resetFields = () => {
     setName("");
@@ -51,17 +59,31 @@ const create = () => {
       return;
     }
 
-    resetFields();
+    insertProduct(
+      { name, price: parseFloat(price), image },
+      {
+        onSuccess: () => {
+          resetFields();
+          router.back();
+        },
+      }
+    );
   };
 
   const onUpdate = () => {
-    console.warn("Updating product");
-
     if (!validateInput()) {
       return;
     }
 
-    resetFields();
+    updateProduct(
+      { id, name, price: parseFloat(price), image },
+      {
+        onSuccess: () => {
+          resetFields();
+          router.back();
+        },
+      }
+    );
   };
 
   const confirmDelete = () => {
