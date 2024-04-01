@@ -1,11 +1,11 @@
 import { View, Text, StyleSheet, Image } from "react-native";
 import React, { useEffect } from "react";
-import { OrderItem } from "@/types";
+import { OrderItem, Tables } from "@/types";
 import { defaultPizzaImage } from "./ProductListItem";
 import Colors from "@/constants/Colors";
 
 type OrderDetailItemProps = {
-  orderItem: OrderItem;
+  orderItem: Tables<"order_items"> & { products: Tables<"products"> };
 };
 
 const OrderDetailItem = ({ orderItem }: OrderDetailItemProps) => {
