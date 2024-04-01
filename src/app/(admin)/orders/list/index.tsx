@@ -3,7 +3,7 @@ import OrderListItem from "@/components/OrderListItem";
 import { useAdminOrderList } from "@/api/orders";
 
 export default function TabTwoScreen() {
-  const { data: orders, error, isLoading } = useAdminOrderList();
+  const { data: orders, error, isLoading } = useAdminOrderList({archived: false});
 
   if (isLoading) {
     return <ActivityIndicator />;
