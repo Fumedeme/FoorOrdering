@@ -1,6 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/provider/AuthProvider";
-import { InsertTables } from "@/types";
+import { InsertTables, Tables } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 type AdminOrderListProps = {
@@ -79,6 +79,35 @@ export const useInsertOrder = () => {
     //Function that will refresh products list after a succesful creation
     async onSuccess() {
       await queryClient.invalidateQueries({ queryKey: ["orders"] });
+    },
+  });
+};
+
+//Update an existing product
+export const useUpdateOrder = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    async mutationFn({
+      id,
+      updatedFields,
+    }: {
+      id: number;
+      updatedFields: Tables<"orders">;
+    }) {
+      const { data: updatedOrder, error } = await supabase
+        .from("products")
+        .update(updatedFields)
+        .eq("id", id)
+        .select()
+        .single();
+      if (error) throw new Error(error.message);
+      return updatedOrder;
+    },
+    //Function that will refresh products list and the specific product after a succesful creation
+    async onSuccess(_, data) {
+      await queryClient.invalidateQueries({ queryKey: ["orders"] });
+      await queryClient.invalidateQueries({ queryKey: ["orders", data.id] });
     },
   });
 };
