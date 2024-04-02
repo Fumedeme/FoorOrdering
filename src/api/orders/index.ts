@@ -1,6 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/provider/AuthProvider";
-import { InsertTables, Tables } from "@/types";
+import { InsertTables, Tables, UpdateTables } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 type AdminOrderListProps = {
@@ -93,10 +93,10 @@ export const useUpdateOrder = () => {
       updatedFields,
     }: {
       id: number;
-      updatedFields: Tables<"orders">;
+      updatedFields: UpdateTables<"orders">;
     }) {
       const { data: updatedOrder, error } = await supabase
-        .from("products")
+        .from("orders")
         .update(updatedFields)
         .eq("id", id)
         .select()

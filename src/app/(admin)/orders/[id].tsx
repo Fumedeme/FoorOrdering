@@ -10,7 +10,7 @@ import React from "react";
 import { Stack, useLocalSearchParams } from "expo-router";
 import OrderListItem from "@/components/OrderListItem";
 import OrderDetailItem from "@/components/OrderDetailItem";
-import { OrderStatusList } from "@/types";
+import { OrderStatusList, Tables } from "@/types";
 import Colors from "@/constants/Colors";
 import { useOrderDetails, useUpdateOrder } from "@/api/orders";
 
@@ -23,6 +23,15 @@ const OrderDetailsPage = () => {
 
   const { mutate: updateOrder } = useUpdateOrder();
 
+  const updateStatus = (status: string) => {
+    updateOrder({
+      id: id,
+      updatedFields: {
+        status,
+      },
+    });
+  };
+
   if (isLoading) {
     return <ActivityIndicator />;
   }
@@ -34,12 +43,22 @@ const OrderDetailsPage = () => {
   if (!order) {
     return;
   }
+
+  //TODO: Workaround for turning a type into non nullable type
+  type NonNullOrderItem = Tables<"order_items"> & {
+    products: Tables<"products">;
+  };
+
+  const nonNullOrderItems: NonNullOrderItem[] = order.order_items.filter(
+    (item): item is NonNullOrderItem => item.products !== null
+  );
+
   return (
     <View style={styles.container}>
       <Stack.Screen options={{ title: `Order #${order?.id}` }} />
 
       <FlatList
-        data={order.order_items}
+        data={nonNullOrderItems}
         renderItem={({ item }) => (
           <OrderDetailItem key={item.id} orderItem={item} />
         )}
@@ -52,22 +71,7 @@ const OrderDetailsPage = () => {
               {OrderStatusList.map((status) => (
                 <Pressable
                   key={status}
-                  onPress={() =>
-                    updateOrder(
-                      {
-                        id: id,
-                        updatedFields: { ...order, status },
-                      },
-                      {
-                        onSuccess: () => {
-                          console.warn("success");
-                        },
-                        onError: (err) => {
-                          console.log("error", err);
-                        },
-                      }
-                    )
-                  }
+                  onPress={() => updateStatus(status)}
                   style={{
                     borderColor: Colors.light.tint,
                     borderWidth: 1,
