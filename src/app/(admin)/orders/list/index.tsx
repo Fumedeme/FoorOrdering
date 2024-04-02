@@ -1,9 +1,16 @@
 import { ActivityIndicator, FlatList, StyleSheet, Text } from "react-native";
 import OrderListItem from "@/components/OrderListItem";
 import { useAdminOrderList } from "@/api/orders";
+import { useInsertOrderSubscription } from "@/api/orders/subscriptions";
 
 export default function TabTwoScreen() {
-  const { data: orders, error, isLoading } = useAdminOrderList({archived: false});
+  const {
+    data: orders,
+    error,
+    isLoading,
+  } = useAdminOrderList({ archived: false });
+
+  useInsertOrderSubscription();
 
   if (isLoading) {
     return <ActivityIndicator />;

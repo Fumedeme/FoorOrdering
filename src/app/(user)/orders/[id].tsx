@@ -10,6 +10,8 @@ import { Stack, useLocalSearchParams } from "expo-router";
 import OrderListItem from "@/components/OrderListItem";
 import OrderDetailItem from "@/components/OrderDetailItem";
 import { useOrderDetails } from "@/api/orders";
+import { useUpdateOrderSubscription } from "@/api/orders/subscriptions";
+import { Tables } from "@/types";
 
 const OrderDetailsPage = () => {
   const { id: idString } = useLocalSearchParams();
@@ -17,6 +19,8 @@ const OrderDetailsPage = () => {
   const id = parseFloat(typeof idString === "string" ? idString : idString[0]);
 
   const { data: order, isLoading, error } = useOrderDetails(id);
+
+  useUpdateOrderSubscription(id);
 
   if (isLoading) {
     return <ActivityIndicator />;
@@ -26,9 +30,18 @@ const OrderDetailsPage = () => {
     return <Text>There was an error fetching the data</Text>;
   }
 
-  if (!order || order.order_items) {
+  if (!order) {
     return;
   }
+
+  //TODO: Workaround for turning a type into non nullable type
+  type NonNullOrderItem = Tables<"order_items"> & {
+    products: Tables<"products">;
+  };
+
+  const nonNullOrderItems: NonNullOrderItem[] = order.order_items.filter(
+    (item): item is NonNullOrderItem => item.products !== null
+  );
 
   return (
     <View style={styles.container}>
@@ -36,7 +49,7 @@ const OrderDetailsPage = () => {
       <OrderListItem orderItem={order} />
 
       <FlatList
-        data={order.order_items}
+        data={nonNullOrderItems}
         renderItem={({ item }) => (
           <OrderDetailItem key={item.id} orderItem={item} />
         )}
