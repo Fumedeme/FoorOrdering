@@ -5,6 +5,8 @@ import { Tables } from "@/database.types";
 import { useInsertOrder } from "@/api/orders";
 import { router } from "expo-router";
 import { useInsertOrderItems } from "@/api/orderItems";
+import { initialisePaymentSheet, openPaymentSheet } from "@/lib/stripe";
+import { Alert } from "react-native";
 
 type Product = Tables<"products">;
 
@@ -78,7 +80,15 @@ const CartProvider = ({ children }: PropsWithChildren) => {
     setItems([]);
   };
 
-  const checkout = () => {
+  const checkout = async () => {
+    await initialisePaymentSheet(Math.floor(total * 100));
+    const payed = await openPaymentSheet();
+
+    if (!payed) {
+      Alert.alert("Payment could not be taken, cannot checkout");
+      return;
+    }
+
     insertOrder(
       { total },
       {
