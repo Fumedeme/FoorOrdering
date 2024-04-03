@@ -57,7 +57,7 @@ export const useUpdateProduct = () => {
     async mutationFn(data: any) {
       const { data: updatedProduct, error } = await supabase
         .from("products")
-        .update({ name: data.name, price: data.price, image: data.price })
+        .update({ name: data.name, price: data.price, image: data.image })
         .eq("id", data.id)
         .select()
         .single();

@@ -3,6 +3,7 @@ import React, { useEffect } from "react";
 import { OrderItem, Tables } from "@/types";
 import { defaultPizzaImage } from "./ProductListItem";
 import Colors from "@/constants/Colors";
+import RemoteImage from "./RemoteImage";
 
 type OrderDetailItemProps = {
   orderItem: Tables<"order_items"> & { products: Tables<"products"> };
@@ -11,9 +12,10 @@ type OrderDetailItemProps = {
 const OrderDetailItem = ({ orderItem }: OrderDetailItemProps) => {
   return (
     <View style={styles.container}>
-      <Image
+      <RemoteImage
+        path={orderItem.products.image}
+        fallback={defaultPizzaImage}
         style={styles.image}
-        source={{ uri: orderItem.products.image || defaultPizzaImage }}
       />
       <View style={styles.titleContainer}>
         <Text style={{ fontSize: 20 }}>{orderItem.products.name}</Text>

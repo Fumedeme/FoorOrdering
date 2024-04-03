@@ -19,6 +19,7 @@ const RemoteImage = ({ path, fallback, ...imageProps }: RemoteImageProps) => {
         .download(path);
 
       if (error) {
+        console.log("hatalı path", path);
         console.log("resim indirme hatası", error);
       }
 

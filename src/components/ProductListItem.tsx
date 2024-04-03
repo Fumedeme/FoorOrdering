@@ -1,4 +1,4 @@
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text } from "react-native";
 import Colors from "../constants/Colors";
 import { Link, useSegments, Href } from "expo-router";
 import { Tables } from "@/database.types";

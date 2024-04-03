@@ -15,12 +15,16 @@ import { randomUUID } from "expo-crypto";
 import { supabase } from "@/lib/supabase";
 import { decode } from "base64-arraybuffer";
 import * as FileSystem from "expo-file-system";
+import RemoteImage from "@/components/RemoteImage";
 
 const create = () => {
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [errors, setErrors] = useState("");
   const [image, setImage] = useState<string | null>();
+  const [uploadedImagePath, setUploadedImagePath] = useState<string | null>(
+    null
+  );
 
   const router = useRouter();
 
@@ -78,35 +82,35 @@ const create = () => {
       return;
     }
 
-    const imagePath = await uploadImage();
-
-    console.log("image path", imagePath);
-
-    insertProduct(
-      { name, price: parseFloat(price), image: imagePath },
-      {
-        onSuccess: () => {
-          resetFields();
-          router.back();
-        },
-      }
-    );
+    if (uploadedImagePath !== null) {
+      insertProduct(
+        { name, price: parseFloat(price), image: uploadedImagePath },
+        {
+          onSuccess: () => {
+            resetFields();
+            router.back();
+          },
+        }
+      );
+    }
   };
 
-  const onUpdate = () => {
+  const onUpdate = async () => {
     if (!validateInput()) {
       return;
     }
 
-    updateProduct(
-      { id, name, price: parseFloat(price), image },
-      {
-        onSuccess: () => {
-          resetFields();
-          router.back();
-        },
-      }
-    );
+    if (uploadedImagePath !== null) {
+      updateProduct(
+        { id, name, price: parseFloat(price), image: uploadedImagePath },
+        {
+          onSuccess: () => {
+            resetFields();
+            router.back();
+          },
+        }
+      );
+    }
   };
 
   const confirmDelete = () => {
@@ -140,17 +144,17 @@ const create = () => {
     });
 
     if (!result.canceled) {
-      setImage(result.assets[0].uri);
+      uploadImage(result.assets[0].uri);
     }
   };
 
-  const uploadImage = async () => {
-    if (!image?.startsWith("file://")) {
+  const uploadImage = async (image2: string) => {
+    if (!image2?.startsWith("file://")) {
       return;
     }
 
     try {
-      const base64 = await FileSystem.readAsStringAsync(image, {
+      const base64 = await FileSystem.readAsStringAsync(image2, {
         encoding: "base64",
       });
       const filePath = `${randomUUID()}.png`;
@@ -163,7 +167,8 @@ const create = () => {
       console.log(error);
 
       if (data) {
-        return data.path;
+        setImage(data.path);
+        setUploadedImagePath(data.path);
       }
     } catch (error) {
       console.log("genel hata", error);
@@ -175,8 +180,9 @@ const create = () => {
       <Stack.Screen
         options={{ title: isUpdating ? "Update Product" : "Create Product" }}
       />
-      <Image
-        source={{ uri: image || defaultPizzaImage }}
+      <RemoteImage
+        path={image}
+        fallback={defaultPizzaImage}
         style={styles.image}
       />
       <Text onPress={pickImage} style={styles.textButton}>
