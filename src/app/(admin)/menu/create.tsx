@@ -73,12 +73,14 @@ const create = () => {
       onCreate();
     }
   };
-  const onCreate = () => {
+  const onCreate = async () => {
     if (!validateInput()) {
       return;
     }
 
-    const imagePath = uploadImage();
+    const imagePath = await uploadImage();
+
+    console.log("image path", imagePath);
 
     insertProduct(
       { name, price: parseFloat(price), image: imagePath },

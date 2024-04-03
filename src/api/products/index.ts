@@ -37,7 +37,7 @@ export const useInsertProduct = () => {
     async mutationFn(data: any) {
       const { data: newProduct, error } = await supabase
         .from("products")
-        .insert({ name: data.name, price: data.price, image: data.price })
+        .insert({ name: data.name, price: data.price, image: data.image })
         .single();
       if (error) throw new Error(error.message);
       return newProduct;
