@@ -14,7 +14,7 @@ Notifications.setNotificationHandler({
 
 const NotificationProvider = ({ children }: PropsWithChildren) => {
   const [expoPushToken, setExpoPushToken] = useState<string | undefined>();
-  const { profile } = useAuth();
+  const { session } = useAuth();
   const [notification, setNotification] =
     useState<Notifications.Notification>();
   const notificationListener = useRef<Notifications.Subscription>();
@@ -25,10 +25,16 @@ const NotificationProvider = ({ children }: PropsWithChildren) => {
 
     if (!token2) return;
 
-    await supabase
-      .from("profiles")
-      .update({ expo_push_token: token2 })
-      .eq("id", profile.id);
+    if (!session?.user.id) return;
+
+    try {
+      await supabase
+        .from("profiles")
+        .update({ expo_push_token: token2 })
+        .eq("id", session?.user.id);
+    } catch (error) {
+      console.log("Error while saving user token", error);
+    }
   };
 
   useEffect(() => {
