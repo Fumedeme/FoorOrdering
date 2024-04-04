@@ -1,6 +1,8 @@
 import { registerForPushNotificationsAsync } from "@/lib/notifications";
+import { supabase } from "@/lib/supabase";
 import * as Notifications from "expo-notifications";
 import { PropsWithChildren, useEffect, useRef, useState } from "react";
+import { useAuth } from "./AuthProvider";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -12,15 +14,25 @@ Notifications.setNotificationHandler({
 
 const NotificationProvider = ({ children }: PropsWithChildren) => {
   const [expoPushToken, setExpoPushToken] = useState<string | undefined>();
+  const { profile } = useAuth();
   const [notification, setNotification] =
     useState<Notifications.Notification>();
   const notificationListener = useRef<Notifications.Subscription>();
   const responseListener = useRef<Notifications.Subscription>();
 
+  const saveToken = async (token2: string | undefined) => {
+    setExpoPushToken(token2);
+
+    if (!token2) return;
+
+    await supabase
+      .from("profiles")
+      .update({ expo_push_token: token2 })
+      .eq("id", profile.id);
+  };
+
   useEffect(() => {
-    registerForPushNotificationsAsync().then((token) =>
-      setExpoPushToken(token)
-    );
+    registerForPushNotificationsAsync().then((token) => saveToken(token));
 
     notificationListener.current =
       Notifications.addNotificationReceivedListener((notification) => {
